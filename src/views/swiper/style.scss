@@ -1,0 +1,17 @@
+.swiper-normal {
+  width: 640px;
+  height: 360px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+
+  .swiper-main {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    .swiper-item {
+      position: absolute;;
+    }
+  }
+}
