@@ -4,13 +4,13 @@ import { Swiper } from './swiper'
 
 const imgList = [{
   url: '#',
-  path: '../../src/images/pic1.png'
-},{
+  path: 'https://s1.ax1x.com/2020/09/18/wfLjcn.jpg'
+}, {
   url: '#',
-  path: '../../src/images/pic2.png'
-},{
+  path: 'https://s1.ax1x.com/2020/09/18/wfLOpj.jpg'
+}, {
   url: '#',
-  path: '../../src/images/pic3.png'
+  path: 'https://s1.ax1x.com/2020/09/18/wfLX1s.jpg'
 }]
 
 // 导出类
@@ -19,6 +19,6 @@ export default class {
     document.title = 'swiper normal'
     container.innerHTML = template
 
-    new Swiper(imgList).init()
+    new Swiper({ imgList }).init()
   }
 }
