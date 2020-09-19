@@ -1,6 +1,5 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const { HashedModuleIdsPlugin } = require('webpack')
 
 module.exports = {
   /*
@@ -8,22 +7,25 @@ module.exports = {
   开发模式下使用 cheap-module-eval-source-map, 生成的 source map 能和源码每行对应，方便打断点调试
   生产模式下使用 hidden-source-map, 生成独立的 source map 文件，并且不在 js 文件中插入 source map 路径，用于在 error report 工具中查看 （比如 Sentry)
   */
-  devtool: 'eval-cheap-source-map',
+  devtool: 'eval-source-map',
 
   // 配置页面入口 js 文件
-  entry: './src/index.js',
+  entry: {
+    dashboard: './src/dashboard/index.js',
+    swiper: './src/swiper/index.js'
+  },
 
   // 配置打包输出相关
   output: {
     path: path.resolve(__dirname, 'dist'), // 打包输出目录
-    filename: 'index.js', // 入口 js 的打包输出文件名
-    chunkFilename: '[chunkhash].js' //非入口文件chunk名称
+    filename: '[name].[hash].js', // 入口 js 的打包输出文件名
   },
 
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 9000
+    compress: false,
+    port: 9000,
+    index: 'dashboard.html'
   },
 
   module: {
@@ -33,39 +35,18 @@ module.exports = {
     */
     rules: [
       {
-        /*
-        使用 babel 编译 ES6 / ES7 / ES8 为 ES5 代码
-        使用正则表达式匹配后缀名为 .js 的文件
-        */
         test: /\.js$/,
-
-        // 排除 node_modules 目录下的文件，npm 安装的包不需要编译
         exclude: /node_modules/,
-
-        /*
-        use 指定该文件的 loader, 值可以是字符串或者数组。
-        这里先使用 eslint-loader 处理，返回的结果交给 babel-loader 处理。loader 的处理顺序是从最后一个到第一个。
-        eslint-loader 用来检查代码，如果有错误，编译的时候会报错。
-        babel-loader 用来编译 js 文件。
-        */
         use: ['babel-loader']
       },
-
       {
         // 匹配 html 文件
         test: /\.html$/,
-        /*
-        使用 html-loader, 将 html 内容存为 js 字符串，比如当遇到
-        import htmlString from './template.html';
-        template.html 的文件内容会被转成一个 js 字符串，合并到 js 文件里。
-        */
         use: 'html-loader'
       },
-
       {
         // 匹配 css 文件
         test: /\.css$/,
-
         /*
         先使用 css-loader 处理，返回的结果交给 style-loader 处理。
         css-loader 将 css 内容存为 js 字符串，并且会把 background, @font-face 等引用的图片，
@@ -87,16 +68,6 @@ module.exports = {
 
         当文件体积小于 limit 时，url-loader 把文件转为 Data URI 的格式内联到引用的地方
         当文件大于 limit 时，url-loader 会调用 file-loader, 把文件储存到输出目录，并把引用的文件路径改写成输出后的路径
-
-        比如 views/foo/index.html 中
-        <img src="smallpic.png">
-        会被编译成
-        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAA...">
-
-        而
-        <img src="largepic.png">
-        会被编译成
-        <img src="/f78661bef717cf2cc2c2e5158f196384.png">
         */
         use: [
           {
@@ -131,48 +102,22 @@ module.exports = {
     所以，我们需要 html-webpack-plugin 来打包作为入口的 html 文件
     */
     new HtmlWebpackPlugin({
-      /*
-      template 参数指定入口 html 文件路径，插件会把这个文件交给 webpack 去编译，
-      webpack 按照正常流程，找到 loaders 中 test 条件匹配的 loader 来编译，那么这里 html-loader 就是匹配的 loader
-      html-loader 编译后产生的字符串，会由 html-webpack-plugin 储存为 html 文件到输出目录，默认文件名为 index.html
-      可以通过 filename 参数指定输出的文件名
-      html-webpack-plugin 也可以不指定 template 参数，它会使用默认的 html 模板。
-      */
-      template: './src/index.html',
-
-      /*
-      因为和 webpack 4 的兼容性问题，chunksSortMode 参数需要设置为 none
-      https://github.com/jantimon/html-webpack-plugin/issues/870
-      */
-      chunksSortMode: 'none'
+      template: './src/dashboard/index.html',
+      filename: 'dashboard.html',
+      chunks: ['dashboard'],
+      hash: true,//防止缓存
+      minify: {
+        removeAttributeQuotes: true//压缩 去掉引号
+      }
     }),
-    /*
-    使用文件路径的 hash 作为 moduleId。
-    虽然我们使用 [chunkhash] 作为 chunk 的输出名，但仍然不够。
-    因为 chunk 内部的每个 module 都有一个 id，webpack 默认使用递增的数字作为 moduleId。
-    如果引入了一个新文件或删掉一个文件，可能会导致其他文件的 moduleId 也发生改变，
-    那么受影响的 module 所在的 chunk 的 [chunkhash] 就会发生改变，导致缓存失效。
-    因此使用文件路径的 hash 作为 moduleId 来避免这个问题。
-    */
-    new HashedModuleIdsPlugin()
-  ],
-  optimization: {
-    /*
-    上面提到 chunkFilename 指定了 chunk 打包输出的名字，那么文件名存在哪里了呢？
-    它就存在引用它的文件中。这意味着一个 chunk 文件名发生改变，会导致引用这个 chunk 文件也发生改变。
-
-    runtimeChunk 设置为 true, webpack 就会把 chunk 文件名全部存到一个单独的 chunk 中，
-    这样更新一个文件只会影响到它所在的 chunk 和 runtimeChunk，避免了引用这个 chunk 的文件也发生改变。
-    */
-    runtimeChunk: true,
-
-    splitChunks: {
-      /*
-      默认 entry 的 chunk 不会被拆分
-      因为我们使用了 html-webpack-plugin 来动态插入 <script> 标签，entry 被拆成多个 chunk 也能自动被插入到 html 中，
-      所以我们可以配置成 all, 把 entry chunk 也拆分了
-      */
-      chunks: 'all'
-    }
-  }
+    new HtmlWebpackPlugin({
+      template: './src/swiper/index.html',
+      filename: 'swiper.html',
+      chunks: ['swiper'],
+      hash: true,//防止缓存
+      minify: {
+        removeAttributeQuotes: true//压缩 去掉引号
+      }
+    })
+  ]
 }
