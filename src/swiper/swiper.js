@@ -18,7 +18,7 @@ class Swiper {
     const mainView = document.createElement('ul')
     mainView.className = 'swiper-main'
     mainView.style.width = `${step * (length)}px`
-    mainView.style.left = `${-this.step}px`
+    mainView.style.left = `${-step}px`
 
     // 轮播图片
     let li = '';
