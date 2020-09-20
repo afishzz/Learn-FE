@@ -47,7 +47,7 @@ class Swiper {
   }
 
   prev() {
-
+    
   }
 
   next() {
