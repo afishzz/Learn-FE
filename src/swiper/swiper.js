@@ -18,13 +18,12 @@ class Swiper {
     const mainView = document.createElement('ul')
     mainView.className = 'swiper-main'
     mainView.style.width = `${step * (length)}px`
-    mainView.style.left = `${-this.step}px`
+    mainView.style.left = `${-step}px`
 
     // 轮播图片
     let li = '';
     for (let i = 0; i < retImgList.length; i++) {
-      li += `<li style="left: ${i * step}px;width: ${step}px" class="swiper-item">
-              <a href="${retImgList[i].url}"><img src="${retImgList[i].path}" alt=""></a></li>`;
+      li += `<li style="left: ${i * step}px;width: ${step}px" class="swiper-item"><img src="${retImgList[i].path}" alt="展示不出来"></li>`;
     }
     mainView.innerHTML = li
 

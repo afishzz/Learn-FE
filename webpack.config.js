@@ -40,11 +40,6 @@ module.exports = {
         use: ['babel-loader']
       },
       {
-        // 匹配 html 文件
-        test: /\.html$/,
-        use: 'html-loader'
-      },
-      {
         // 匹配 css 文件
         test: /\.css$/,
         /*
