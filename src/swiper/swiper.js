@@ -23,8 +23,7 @@ class Swiper {
     // 轮播图片
     let li = '';
     for (let i = 0; i < retImgList.length; i++) {
-      li += `<li style="left: ${i * step}px;width: ${step}px" class="swiper-item">
-              <a href="${retImgList[i].url}"><img src="${retImgList[i].path}" alt=""></a></li>`;
+      li += `<li style="left: ${i * step}px;width: ${step}px" class="swiper-item"><img src="${retImgList[i].path}" alt=""></li>`;
     }
     mainView.innerHTML = li
 

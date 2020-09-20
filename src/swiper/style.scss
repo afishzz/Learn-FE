@@ -8,7 +8,6 @@
   .swiper-main {
     height: 100%;
     position: relative;
-    overflow: hidden;
     list-style: none;
     padding: 0;
 
@@ -24,6 +23,7 @@
   }
 
   .prev{
+    z-index: 1;
     position: absolute;
     left: 15px;
     top: 50%;
@@ -33,6 +33,7 @@
   }
 
   .next{
+    z-index: 1;
     position: absolute;
     right: 15px;
     top: 50%;
