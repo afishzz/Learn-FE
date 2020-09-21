@@ -12,7 +12,7 @@
     padding: 0;
 
     .swiper-item {
-      z-index: 1;
+      position: absolute;
 
       img {
         display: inline-block;
@@ -22,23 +22,21 @@
     }
   }
 
-  .prev{
+  .prev, .next{
     z-index: 1;
     position: absolute;
-    left: 15px;
     top: 50%;
     transform: translateY(-50%);
     width: 30px;
     height: 30px;
+    cursor: pointer;
   }
 
   .next{
-    z-index: 1;
-    position: absolute;
     right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 30px;
-    height: 30px;
+  }
+
+  .prev {
+    left: 15px;
   }
 }
