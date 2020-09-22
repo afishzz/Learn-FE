@@ -1,34 +1,39 @@
 .swiper-normal {
   width: 640px;
-  height: 360px;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
 
   .swiper-main {
-    height: 100%;
     position: relative;
-    list-style: none;
-    padding: 0;
+    height: 360px;
 
     .swiper-item {
       position: absolute;
-
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      
       img {
-        display: inline-block;
+        display: block;
         width: 100%;
         height: 100%;
+      }
+
+      &.is-animating {
+        transition: transform .4s ease-in-out;
       }
     }
   }
 
   .prev, .next{
-    z-index: 1;
     position: absolute;
+    z-index: 1;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translateY(-100%);
     width: 30px;
-    height: 30px;
     cursor: pointer;
   }
 
@@ -38,5 +43,29 @@
 
   .prev {
     left: 15px;
+  }
+
+  .indicator {
+    position: absolute;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &-item {
+      display: inline-block;
+      margin: 12px 4px;
+      background-color: #ffffff;
+      cursor: pointer;
+      height: 4px;
+      width: 18px;
+      opacity: .5;
+
+      &.active {
+        opacity: 1;
+      }
+    }
   }
 }
