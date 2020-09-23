@@ -20,10 +20,8 @@ class Swiper {
 
   init() {
     this.createContainer()
-
     this.startTimer()
     this.setIndicator()
-
     this.bindEvent()
   }
 
