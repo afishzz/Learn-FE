@@ -14,5 +14,5 @@ const imgList = [{
   path: 'https://s1.ax1x.com/2020/09/18/wfLX1s.jpg'
 }]
 
-new Swiper({ imgList }).init()
+new Swiper({ imgList, autoplay: true, loop: true }).init()
 

@@ -1,34 +1,50 @@
+import { throttle } from '../utils'
+
 class Swiper {
 
   constructor(config) {
     this.imgList = config.imgList || []
-    this.duration = config.duration || 1000
-    this.loop = config.loop || true
+    this.duration = config.duration || 2000
+    this.loop = config.loop
+    this.autoplay = config.autoplay
 
     this.mainView = document.getElementsByClassName('swiper-main')[0]
-    this.step = document.getElementsByClassName('swiper-normal')[0].offsetWidth
+    this.swiper = document.getElementsByClassName('swiper-normal')[0]
+    this.step = this.swiper.offsetWidth
     this.items = null
     this.indicators = null
 
     this.activeIndex = 0
+    this.timer = null
   }
 
   init() {
     this.createContainer()
-    this.items = document.getElementsByClassName('swiper-item')
-    this.indicators = document.getElementsByClassName('indicator-item')
 
+    this.startTimer()
     this.setIndicator()
 
-    document.getElementsByClassName('prev')[0].addEventListener('click', e => {
+    this.bindEvent()
+  }
+
+  bindEvent() {
+    document.getElementsByClassName('prev')[0].addEventListener('click', throttle(e => {
       e.stopPropagation()
       this.prev()
-    }, false)
+    }, 500), false)
 
-    document.getElementsByClassName('next')[0].addEventListener('click', e => {
+    document.getElementsByClassName('next')[0].addEventListener('click', throttle(e => {
       e.stopPropagation()
       this.next()
-    }, false)
+    }, 500), false)
+
+    this.swiper.addEventListener('mouseenter', () => {
+      this.pauseTimer()
+    })
+
+    this.swiper.addEventListener('mouseleave', () => {
+      this.startTimer()
+    })
   }
 
   createContainer() {
@@ -48,14 +64,17 @@ class Swiper {
 
       let li = document.createElement('li')
       li.className = 'indicator-item'
-      li.addEventListener('click', e => {
+      li.addEventListener('click', throttle(e => {
         e.stopPropagation()
         this.setActiveItem(i)
-      }, false)
+      }, 1000), false)
       indicatorWrap.appendChild(li)
     }
     this.mainView.appendChild(items)
     this.mainView.appendChild(indicatorWrap)
+
+    this.items = document.getElementsByClassName('swiper-item')
+    this.indicators = document.getElementsByClassName('indicator-item')
   }
 
   processIndex(index, activeIndex, length) {
@@ -73,6 +92,7 @@ class Swiper {
 
   setActiveItem(index) {
     let length = this.items.length
+    const oldIndex = this.activeIndex
     if (index < 0) {
       this.activeIndex = this.loop ? length - 1 : 0
     } else if (index >= length) {
@@ -80,15 +100,15 @@ class Swiper {
     } else {
       this.activeIndex = index
     }
-    this.resetItemPosition()
+    this.resetItemPosition(oldIndex)
     this.setIndicator()
   }
 
-  resetItemPosition() {
+  resetItemPosition(oldIndex) {
     const length = this.items.length
     for (let i = 0; i < this.items.length; i++) {
       let index = i
-      this.items[i].className = i === this.activeIndex ? 'swiper-item is-animating' : 'swiper-item'
+      this.items[i].className = i === this.activeIndex || i === oldIndex ? 'swiper-item is-animating' : 'swiper-item'
       if (i !== this.activeIndex && length > 2 && this.loop) {
         index = this.processIndex(i, this.activeIndex, length)
       }
@@ -117,6 +137,18 @@ class Swiper {
 
   calcTranslate(index, activeIndex) {
     return this.step * (index - activeIndex)
+  }
+
+  startTimer() {
+    if (this.timer || this.duration <= 0 || !this.autoplay) return
+    this.timer = setInterval(this.next.bind(this), this.duration)
+  }
+
+  pauseTimer() {
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
   }
 
 }
