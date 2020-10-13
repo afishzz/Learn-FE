@@ -12,7 +12,8 @@ module.exports = {
   // 配置页面入口 js 文件
   entry: {
     dashboard: './src/dashboard/index.js',
-    swiper: './src/swiper/index.js'
+    swiper: './src/swiper/index.js',
+    infiniteScroll: './src/infinite-scroll/index.js'
   },
 
   // 配置打包输出相关
@@ -109,6 +110,15 @@ module.exports = {
       template: './src/swiper/index.html',
       filename: 'swiper.html',
       chunks: ['swiper'],
+      hash: true,//防止缓存
+      minify: {
+        removeAttributeQuotes: true//压缩 去掉引号
+      }
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/infinite-scroll/index.html',
+      filename: 'infinite-scroll.html',
+      chunks: ['infiniteScroll'],
       hash: true,//防止缓存
       minify: {
         removeAttributeQuotes: true//压缩 去掉引号
