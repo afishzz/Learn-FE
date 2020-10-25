@@ -1,5 +1,5 @@
 import 'normalize.css'
-import './style.scss'
+import './style.less'
 
 import { Swiper } from './swiper'
 

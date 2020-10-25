@@ -1,4 +1,4 @@
 import 'normalize.css'
-import './style.scss'
+import './style.less'
 
 document.title = '首页'
