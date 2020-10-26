@@ -1,8 +1,13 @@
+'use strict'
+
 const path = require('path')
 const glob = require('glob')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin');
 
 const setMPA = () => {
   const entry = {};
@@ -65,7 +70,8 @@ module.exports = {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader']
+          'css-loader'
+        ]
       },
 
       {
@@ -85,16 +91,40 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           'css-loader', // 将 CSS 转化成 CommonJS 模块
           'less-loader', // 将 Sass 编译成 CSS
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  'postcss-preset-env'
+                ]
+              }
+            }
+          }
         ],
       }
     ],
   },
-
   plugins: [
     new CleanWebpackPlugin(),
-    // 把css提取出来
     new MiniCssExtractPlugin({
       filename: '[name]_[contenthash:8].css'
-    })
-  ].concat(htmlWebpackPlugins)
+    }),
+    new FriendlyErrorsWebpackPlugin(),
+    new BundleAnalyzerPlugin(),
+    new SpeedMeasureWebpackPlugin()
+  ].concat(htmlWebpackPlugins),
+  stats: 'errors-only',
+  optimization: {
+    splitChunks: {
+      minSize: 1000,
+      cacheGroups: {
+        commons: {
+          name: 'common',
+          chunks: 'all',
+          minChunks: 3
+        }
+      }
+    }
+  }
 }

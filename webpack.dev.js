@@ -1,8 +1,11 @@
+'use strict'
+
 const path = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
 
 const setMPA = () => {
   const entry = {};
@@ -27,8 +30,8 @@ const setMPA = () => {
             html5: true,
             collapseWhitespace: true,
             preserveLineBreaks: false,
-            minifyCSS: true,
-            minifyJS: true,
+            minifyCSS: false,
+            minifyJS: false,
             removeComments: false
           }
         })
@@ -64,6 +67,7 @@ module.exports = {
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     hot: true,
+    stats: 'errors-only',
     index: 'dashboard.html'
   },
 
@@ -136,6 +140,7 @@ module.exports = {
     所以，我们需要 html-webpack-plugin 来打包作为入口的 html 文件
     */
     new CleanWebpackPlugin(),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new FriendlyErrorsWebpackPlugin()
   ].concat(htmlWebpackPlugins)
 }
